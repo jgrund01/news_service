@@ -30,7 +30,6 @@ class NewsFeed(models.Model):
         for i in range(0, len(feed['entries'])):
             news_item = NewsItem()
             news_item.title = feed['entries'][i].title
-            news_item.description = feed['entries'][i].subtitle
             news_item.url = feed['entries'][i].link
             news_item.save()
 
@@ -40,7 +39,6 @@ class NewsFeed(models.Model):
 
 class NewsItem(models.Model):
     title = models.CharField(max_length=CHARACTER_LENGTH_LIMIT)
-    description = models.CharField(max_length=CHARACTER_LENGTH_LIMIT)
     url = models.URLField(max_length=CHARACTER_LENGTH_LIMIT)
 
     news_feed = models.ForeignKey(NewsFeed)
