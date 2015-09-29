@@ -36,8 +36,7 @@ def news_feed_list(request):
 @csrf_exempt
 def news_item_list(request, md5_feed_id):
     if request.method == 'GET':
-
-        news_items = NewsItem.objects.filter(newsfeed__md5_id__contains=md5_feed_id)
+        news_items = NewsItem.objects.filter(news_feed__md5_id__contains=md5_feed_id)
         serializer = NewsItemSerializer(news_items, many=True)
         return JSONResponse(serializer.data)
 
