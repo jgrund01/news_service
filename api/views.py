@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from api.models import NewsFeed, NewsItem
-from api.Serializers import NewsFeedSerializer, NewsItemSerializer
+from api.Serializers import GetNewsFeedSerializer, PostNewsFeedSerializer, NewsItemSerializer
 
 
 class JSONResponse(HttpResponse):
@@ -21,12 +21,12 @@ class JSONResponse(HttpResponse):
 def news_feed_list(request):
     if request.method == 'GET':
         news_feeds = NewsFeed.objects.all()
-        serializer = NewsFeedSerializer(news_feeds, many=True)
+        serializer = GetNewsFeedSerializer(news_feeds, many=True)
         return JSONResponse(serializer.data)
 
     elif request.method == 'POST':
         data = JSONParser().parse(request)
-        serializer = NewsFeedSerializer(data=data)
+        serializer = PostNewsFeedSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return JSONResponse(serializer.data, status=201)
