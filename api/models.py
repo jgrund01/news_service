@@ -24,7 +24,7 @@ class NewsFeed(models.Model):
         self.md5_id = self.get_md5_key()
         super(NewsFeed, self).save(*args, **kwargs)
 
-    def get_news_items(self):
+    def retrieve_and_store_news_items(self):
         feed = feedparser.parse(self.url)
 
         for i in range(0, len(feed['entries'])):
