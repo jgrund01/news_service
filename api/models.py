@@ -31,6 +31,7 @@ class NewsFeed(models.Model):
             news_item = NewsItem()
             news_item.title = feed['entries'][i].title
             news_item.url = feed['entries'][i].link
+            news_item.news_feed = self
             news_item.save()
 
     def get_md5_key(self):
