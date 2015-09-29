@@ -11,4 +11,4 @@ class NewsFeedSerializer(serializers.ModelSerializer):
 class NewsItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = NewsItem
-        fields = ('news_text', 'news_feed')
+        fields = ('title', 'description', 'url')

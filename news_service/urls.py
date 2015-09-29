@@ -1,5 +1,8 @@
-from django.conf.urls import url, include
+from django.conf.urls import url
+from api import views
+
 
 urlpatterns = [
-    url(r'^', include('news_service.urls')),
+    url(r'^news_feed/$', views.news_feed_list),
+    url(r'^news_feed/(?P<md5_feed_id>[a-fA-F\d]{32})/$', views.news_item_list)
 ]
