@@ -1,9 +1,8 @@
 from django.db import models
-from django.db.models.signals import post_save
 from django.utils import timezone
 from django.dispatch import receiver
+from signals import news_feed_saved
 from django.forms.models import model_to_dict
-
 
 import feedparser
 import hashlib
@@ -22,17 +21,19 @@ class NewsFeed(models.Model):
 
     def save(self, *args, **kwargs):
         self.md5_id = self.get_md5_key()
+        news_feed_saved.send(sender=self.__class__, md5_id=self.md5_id)
         super(NewsFeed, self).save(*args, **kwargs)
 
     def retrieve_and_store_news_items(self):
         feed = feedparser.parse(self.url)
 
         for i in range(0, len(feed['entries'])):
-            news_item = NewsItem()
-            news_item.title = feed['entries'][i].title
-            news_item.url = feed['entries'][i].link
-            news_item.news_feed = self
-            news_item.save()
+            if not news_item_exists(feed['entries'][i].link):
+                news_item = NewsItem()
+                news_item.title = feed['entries'][i].title
+                news_item.url = feed['entries'][i].link
+                news_item.news_feed = self
+                news_item.save()
 
     def get_md5_key(self):
         return hashlib.sha224(self.url).hexdigest()
@@ -47,16 +48,18 @@ class NewsItem(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
 
-# @receiver(post_save, sender=NewsFeed, dispatch_uid="server_post_save")
-# def notify_server_config_changed(sender, instance, **kwargs):
-#     """ Notifies a client that a news feed has been updated.
-#
-#         This function is executed when we save a NewsFeed model, and it
-#         makes a POST request on the WAMP-HTTP bridge, allowing us to
-#         make a WAMP publication from Django.
-#     """
-#     requests.post("http://127.0.0.1:8080/notify",
-#                   json={
-#                       'topic': 'clientconfig.' + instance.ip,
-#                       'args': [model_to_dict(instance)]
-#                   })
+@receiver(news_feed_saved, dispatch_uid="news_feed_saved")
+# should this be run by cron or each time a feed is updated?
+def notify_channel_of_update(**kwargs):
+    requests.post("http://127.0.0.1:8080/notify",
+                  json={
+                      'topic': kwargs['md5_id'],
+                      #'topic': '15c8b4f3d878845c7066f483426049a0308df7fa1f6dca88f9d23e36',
+                      'args': [1]
+                  })
+
+
+def news_item_exists(url):
+    if len(NewsItem.objects.filter(url=url)) == 0:
+        return False
+    return True

@@ -1,0 +1,62 @@
+{
+  "controller": {
+   },
+  "workers": [
+    {
+      "type": "router",
+      "options": {
+        "pythonpath": [
+          ".."
+        ]
+      },
+      "realms": [
+        {
+          "name": "realm1",
+          "roles": [
+            {
+              "name": "anonymous",
+              "permissions": [
+                {
+                  "uri": "*",
+                  "publish": true,
+                  "subscribe": true,
+                  "call": true,
+                  "register": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "transports": [
+        {
+          "type": "web",
+          "endpoint": {
+            "type": "tcp",
+            "port": 8080
+          },
+          "paths": {
+            "/": {
+              "type": "wsgi",
+              "module": "news_service_core.wsgi",
+              "object": "application"
+            },
+            "ws": {
+              "type": "websocket",
+              "debug": false
+            },
+            "notify": {
+              "type": "publisher",
+              "realm": "realm1",
+              "role": "anonymous"
+            },
+            "static": {
+              "type": "static",
+              "directory": "../static"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

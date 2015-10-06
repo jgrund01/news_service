@@ -1,0 +1,17 @@
+{
+   "pid": 15491, 
+   "options": {
+      "reactor": null, 
+      "loglevel": "info", 
+      "logtofile": false, 
+      "logformat": "colour", 
+      "command": "start", 
+      "logdir": null, 
+      "config": "/Users/grundj/Projects/wappo/news_service/.crossbar/config.json", 
+      "cbdir": "/Users/grundj/Projects/wappo/news_service/.crossbar"
+   }, 
+   "argv": [
+      "/Library/Frameworks/Python.framework/Versions/2.7/bin/crossbar", 
+      "start"
+   ]
+}

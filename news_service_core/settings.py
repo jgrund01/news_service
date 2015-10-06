@@ -58,9 +58,9 @@ REST_FRAMEWORK = {
     ]
 }
 
-ROOT_URLCONF = 'news_service.urls'
+ROOT_URLCONF = 'news_service_core.urls'
 
-WSGI_APPLICATION = 'news_service.wsgi.application'
+WSGI_APPLICATION = 'news_service_core.wsgi.application'
 
 
 # Database
