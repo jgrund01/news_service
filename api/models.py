@@ -27,13 +27,18 @@ class NewsFeed(models.Model):
     def retrieve_and_store_news_items(self):
         feed = feedparser.parse(self.url)
 
+        news_feed_updated = False
         for i in range(0, len(feed['entries'])):
             if not news_item_exists(feed['entries'][i].link):
+                news_feed_updated = True
                 news_item = NewsItem()
                 news_item.title = feed['entries'][i].title
                 news_item.url = feed['entries'][i].link
                 news_item.news_feed = self
                 news_item.save()
+
+        if news_feed_updated:
+            news_feed_saved.send(sender=self.__class__, md5_id=self.md5_id)
 
     def get_md5_key(self):
         return hashlib.sha224(self.url).hexdigest()
@@ -54,7 +59,7 @@ def notify_channel_of_update(**kwargs):
     requests.post("http://127.0.0.1:8080/notify",
                   json={
                       'topic': kwargs['md5_id'],
-                      #'topic': '15c8b4f3d878845c7066f483426049a0308df7fa1f6dca88f9d23e36',
+                      # 'topic': '15c8b4f3d878845c7066f483426049a0308df7fa1f6dca88f9d23e36',
                       'args': [1]
                   })
 
